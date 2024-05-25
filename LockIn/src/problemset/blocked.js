@@ -1,34 +1,6 @@
-document.addEventListener('DOMContentLoaded', (event) => {
-    let json = {
-        "efeeffe": [
-            {
-                "question": "feef",
-                "answer": "feef"
-            },
-            {
-                "question": "effeef",
-                "answer": "fefefe"
-            },
-            {
-                "question": "wdw",
-                "answer": "dwdw"
-            }
-        ],
-        "skibbidi": [
-            {
-                "question": "feljkkjfefe",
-                "answer": "eflkfekle"
-            },
-            {
-                "question": "felklkfeef",
-                "answer": "fep[ooepfw"
-            },
-            {
-                "question": "fwejofew",
-                "answer": "welkflefwkm,"
-            }
-        ]
-    };
+document.addEventListener('DOMContentLoaded', async (event) => {
+    let json = JSON.parse((await chrome.storage.local.get("flashcards")).flashcards);
+    console.log(json);
     let isSolved = false;
     let currentSet = null;
     let currentQuestionIndex = 0;
@@ -63,7 +35,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         let flashcardContainer = document.getElementById('flashcardContainer');
         flashcardContainer.innerHTML = `
             <p>${question.question}</p>
-            <input type="text" id="answerInput" placeholder="Type your answer here">
+            <input type="text" style="width: 25%;" id="answerInput" placeholder="Type your answer here">
             <button id="submitAnswer">Submit</button>
             <div id="gradingResult"></div> <!-- Grading result display -->
         `;
@@ -75,12 +47,30 @@ document.addEventListener('DOMContentLoaded', (event) => {
         });
     }
 
+    async function query(data) {
+        const response = await fetch(
+            "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2",
+            {
+                headers: { Authorization: "Bearer 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" },
+                method: "POST",
+                body: JSON.stringify(data),
+            }
+        );
+        const result = await response.json();
+        return result;
+    }   
+
     async function checkAnswer(userAnswer) {
         let correctAnswer = currentSet[currentQuestionIndex].answer;
-        const gradingResult = await gradeAnswer(userAnswer, correctAnswer);
         let gradingResultDiv = document.getElementById('gradingResult');
-        gradingResultDiv.textContent = `Similarity: ${gradingResult.similarity.toFixed(2)}\nFeedback: ${gradingResult.feedback}`;
-        if (gradingResult.similarity > 0.8) {
+        let result = await query({
+            "inputs": {
+                "source_sentence": userAnswer,
+                "sentences": [correctAnswer]
+            }
+        });
+        console.log(result[0]);
+        if (result[0] > 0.8) {
             displayBanner('Correct!', 'green');
             currentQuestionIndex++;
             if (currentQuestionIndex < currentSet.length) {
@@ -92,22 +82,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
             displayBanner('Incorrect!', 'red');
         }
     }
-
-    async function gradeAnswer(studentAnswer, correctAnswer) {
-        const response = await fetch('https://your-server-endpoint/api/grade', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                studentAnswer: studentAnswer,
-                correctAnswer: correctAnswer
-            })
-        });
-        const data = await response.json();
-        return data;
-    }
-
     function displayBanner(message, color) {
         let banner = document.getElementById('banner');
         banner.textContent = message;

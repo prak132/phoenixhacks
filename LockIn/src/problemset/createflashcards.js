@@ -21,6 +21,10 @@ document.getElementById('saveflashcard').addEventListener('click', function(even
     let flashcardSet = Array.from(document.querySelectorAll('form')).map(form => {
         let question = form.querySelector('.question').value;
         let answer = form.querySelector('.answer').value;
+        if (!setName) {
+            alert('Flashcard set name must be filled out.');
+            return null;
+        }
         if (!question || !answer) {
             alert('Both question and answer fields must be filled out.');
             return null;
@@ -28,8 +32,15 @@ document.getElementById('saveflashcard').addEventListener('click', function(even
         return {question, answer};
     }).filter(flashcard => flashcard !== null);
     let flashcardData = { [setName]: flashcardSet };
-    console.log(flashcardData);
-    chrome.storage.local.set({"flashcards": flashcardData}, () => {
-        console.log('Flashcard set saved');
+    console.log(JSON.stringify(flashcardData));
+    chrome.storage.local.get("flashcards", (res) => {
+        if(res.flashcards) {
+            flashcardData = {...JSON.parse(res.flashcards), ...flashcardData};
+        } else {
+            flashcardData = {...flashcardData};
+        }
+        chrome.storage.local.set({"flashcards": JSON.stringify(flashcardData)}, () => {
+            console.log('Flashcard set saved');
+        });
     });
 });
