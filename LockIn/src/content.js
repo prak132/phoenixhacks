@@ -7,7 +7,7 @@
 
     const isSiteBlocked = () => {
         for(site of blockedSiteList) {
-            if(currentSiteURL.hostname === site.hostname) return true;
+            if(currentSiteURL.hostname === site) return true;
         }
         return false;
     }
@@ -27,6 +27,5 @@
                 }
             })
         }
-
     });
 })();
