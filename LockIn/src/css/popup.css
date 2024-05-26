@@ -59,3 +59,23 @@
     overflow-y: scroll;
     max-height: 200px;
 }
+
+.blocked-websites-container button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin-top: -15px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.blocked-websites-container button:hover {
+    background-color: #0056b3;
+}
+
+.blocked-websites-container p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
