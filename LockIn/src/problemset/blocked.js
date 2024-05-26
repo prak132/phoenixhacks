@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', async (event) => {
-    let json = JSON.parse((await chrome.storage.local.get("flashcards")).flashcards);
+
+    // chrome.storage.local.clear();
+
+    let json = JSON.parse((await chrome.storage.local.get("flashcards")).flashcards || "{}");
     console.log(json);
     let isSolved = false;
     let currentSet = null;
@@ -34,14 +37,13 @@ document.addEventListener('DOMContentLoaded', async (event) => {
         let question = currentSet[currentQuestionIndex];
         let flashcardContainer = document.getElementById('flashcardContainer');
         flashcardContainer.innerHTML = `
-            <p>${question.question}</p>
-            <input type="text" style="width: 25%;" id="answerInput" placeholder="Type your answer here">
-            <button id="submitAnswer">Submit</button>
-            <div id="gradingResult"></div> <!-- Grading result display -->
+            <p class="termtext" style="font-size: 24px;">${question.Term}</p>
+            <input type="text" style="width: 25%;" id="definitionInput" placeholder="Type the definition here">
+            <button id="submitDefinition">Submit</button>
         `;
 
-        let answerInput = document.getElementById('answerInput');
-        let submitButton = document.getElementById('submitAnswer');
+        let answerInput = document.getElementById('definitionInput');
+        let submitButton = document.getElementById('submitDefinition');
         submitButton.addEventListener('click', function() {
             checkAnswer(answerInput.value);
         });
@@ -62,7 +64,6 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 
     async function checkAnswer(userAnswer) {
         let correctAnswer = currentSet[currentQuestionIndex].answer;
-        let gradingResultDiv = document.getElementById('gradingResult');
         let result = await query({
             "inputs": {
                 "source_sentence": userAnswer,

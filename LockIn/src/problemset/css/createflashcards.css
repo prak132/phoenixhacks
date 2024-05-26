@@ -1,8 +1,10 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-image: linear-gradient(to bottom right, rgb(189, 243, 227), #fab2c2);
     margin: 0;
     padding: 0;
+    width: 500px;
+    height: 500px;
 }
 
 .title {
@@ -27,7 +29,7 @@ body {
 }
 
 #flashcardsetname {
-    width: 15%;
+    width: 45%;
     text-align: center;
     padding: 10px;
     margin-bottom: 10px;

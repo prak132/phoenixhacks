@@ -11,11 +11,11 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["index.html"],
+      "resources": ["src/problemset/blocked.html", "src/problemset/createcard.html"],
       "matches": ["<all_urls>"]
     }
   ],
-  "permissions": ["storage"],
+  "permissions": ["storage", "tabs", "activeTab"],
   "action": {
     "default_popup": "src/popup.html",
     "default_icon": {
